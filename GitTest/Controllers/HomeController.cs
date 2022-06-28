@@ -26,5 +26,9 @@ namespace GitTest.Controllers
 
             return View();
         }
+        public ActionResult Hello()
+        {
+            return View();
+        }
     }
 }
