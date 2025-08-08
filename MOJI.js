@@ -11,10 +11,12 @@ hostname = api.mojidict.com
 let Premium = $response.body;
 var modified = JSON.parse(Premium);
 
-try {
-  modified.result.results["fetch-XTest"].result["8TAAYC1tSZ"].hasPaid = true;
-  modified.result.results["fetch-XTest"].result["8TAAYC1tSZ"].isOpen = true;
-  modified.result.results["fetch-XTest"].result["8TAAYC1tSZ"].privilege = {
+modified.result.results["fetch-XTest"].result["8TAAYC1tSZ"] = {
+  "isNewUser": false,
+  "groupIndex": 0,
+  "isOpen": true,
+  "hasPaid": true,
+  "privilege": {
     "identity": "000-002-00001",
     "privilege": {
       "totalInServiceDays": 9999,
@@ -23,9 +25,9 @@ try {
     },
     "privilegeStatus": "activated",
     "canPay": true
-  };
-} catch (e) {
-  console.log("处理失败：", e);
-}
+  },
+  "diffExpiresDate": 999999999
+};
 
 $done({ body: JSON.stringify(modified) });
+
