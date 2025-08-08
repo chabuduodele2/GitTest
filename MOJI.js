@@ -1,12 +1,12 @@
-// Quantumult X script: script-response-body
-
-
+/*
 [rewrite_local]
-^https:\/\/api\.mojidict\.com\/parse\/functions\/union-api url script-response-body https://raw.githubusercontent.com/chabuduodele2/GitTest/refs/heads/master/MOJI.js?token=GHSAT0AAAAAADE5YMRQPDB6COLHJXNG2WX62EV5ZNQ
 
-[mitm]
+^https:\/\/api\.mojidict\.com\/parse\/functions\/union-api url script-response-body https://raw.githubusercontent.com/chabuduodele2/GitTest/master/MOJI.js
+
+[mitm] 
+
 hostname = api.mojidict.com
-
+*/
 
 let Premium = $response.body;
 var modified = JSON.parse(Premium);
@@ -30,4 +30,3 @@ modified.result.results["fetch-XTest"].result["8TAAYC1tSZ"] = {
 };
 
 $done({ body: JSON.stringify(modified) });
-
