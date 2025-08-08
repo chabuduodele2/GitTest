@@ -1,55 +1,47 @@
-/*
-[rewrite_local]
+#!name=京东助手
+#!desc=京东App点击商品详情触发佣金返利和历史价格
 
-^https:\/\/api\.mojidict\.com\/parse\/functions\/union-api url script-response-body https://raw.githubusercontent.com/chabuduodele2/GitTest/master/MOJI.js
+#!arguments=JD_UNION_ID:null,JD_POSITION_ID:null,JTT_APPID:null,JTT_APPKEY:null,ENGINE:auto,TIMEOUT:120,MMMCK_SCRIPT:慢慢买CK,DISABLE_NOTICE:true,THEME_TIME:7-19
 
-[mitm] 
+#!arguments-desc=[参数设置]
+JD_UNION_ID: 填写京东联盟ID
+   ├ 获取方式：登录京东联盟官网 https://union.jd.com/index
+   └ 示例：12345678
 
-hostname = api.mojidict.com
-*/
+JD_POSITION_ID: 填写推广位ID
+   ├ 获取方式：在京东联盟后台创建推广位
+   └ 示例：1234567890
 
-let Premium = $response.body;
-console.log("📥 原始响应体：", Premium);
+JTT_APPID: 填写京推推AppID
+   ├ 获取方式：登录京推推官网 https://www.jingtuitui.com/user/login
+   └ 示例：1234567890123456
 
-try {
-  var modified = JSON.parse(Premium);
+JTT_APPKEY: 填写京推推AppKey
+   ├ 获取方式：同上
+   └ 示例：b123456ce90123456lk890126789012
 
-  // 判断路径是否存在
-  const userId = "8TAAYC1tSZ";
-  if (
-    modified?.result?.results?.["fetch-XTest"]?.result?.[userId]
-  ) {
-    console.log("✅ 找到用户 ID:", userId);
+ENGINE: 脚本执行引擎
+   ├ auto：自动选择（默认）
+   ├ jsc：使用 JavaScriptCore 引擎
+   └ webview：使用 WebView 引擎
 
-    // 模拟会员数据
-    modified.result.results["fetch-XTest"].result[userId] = {
-      "isNewUser": false,
-      "groupIndex": 0,
-      "isOpen": true,
-      "hasPaid": true,
-      "privilege": {
-        "identity": "000-002-00001",
-        "privilege": {
-          "totalInServiceDays": 0,
-          "expiresDate": 4070880000000,
-          "purchaseDate": 1672502400000
-        },
-        "privilegeStatus": "activated",
-        "canPay": true
-      },
-      "diffExpiresDate": 999999999
-    };
+TIMEOUT: 脚本超时时间（单位秒）
+   ├ 默认 120
 
-    console.log("🎉 会员信息修改成功！");
-    console.log("🧾 最终数据：", JSON.stringify(modified));
+MMMCK_SCRIPT: 慢慢买 CK 启停脚本
+   ├ 慢慢买CK：启用
+   └ #: 注释掉即停用
 
-  } else {
-    console.log("❌ 没找到指定用户 ID：" + userId);
-  }
+DISABLE_NOTICE: 禁用转链通知（true启用通知，false仅展示图表）
 
-  $done({ body: JSON.stringify(modified) });
+THEME_TIME: 自定义暗黑模式时间范围
+   ├ 格式：起始小时-结束小时（如 7-19）
+   └ 示例：22-6 表示 22:00~6:00 暗黑模式
 
-} catch (e) {
-  console.log("❗JSON 解析失败:", e);
-  $done({ body: Premium });
-}
+[Script]
+京东助手 = type=http-response,pattern=^https:\/\/in\.m\.jd\.com\/product\/.+?\.html,requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js,argument=jd_union_id={{{JD_UNION_ID}}}&jd_position_id={{{JD_POSITION_ID}}}&jtt_appid={{{JTT_APPID}}}&jtt_appkey={{{JTT_APPKEY}}}&engine={{{ENGINE}}}&timeout={{{TIMEOUT}}}&disable_notice={{{DISABLE_NOTICE}}}&theme_time={{{THEME_TIME}}}
+
+{{{MMMCK_SCRIPT}}} = type=http-request,pattern=^https?:\/\/apapia-sqk-weblogic\.manmanbuy\.com/baoliao/center/menu,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js,timeout=30
+
+[MITM]
+hostname = %APPEND% in.m.jd.com, lite-in.m.jd.com, apapia-sqk-weblogic.manmanbuy.com
