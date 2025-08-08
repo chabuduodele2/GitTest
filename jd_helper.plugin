@@ -1,47 +1,37 @@
-#!name=京东助手
-#!desc=京东App点击商品详情触发佣金返利和历史价格
+#!name=京东助手插件
+#!desc=京东App商品详情页自动触发京东联盟返利与慢慢买历史价格对比图，支持参数配置
+#!author=githubdulong（封装：ChatGPT）
+#!homepage=https://github.com/githubdulong/Script
+#!icon=https://cdn.jsdelivr.net/gh/githubdulong/Script/icon/jd.png
+#!input = JD_UNION_ID
+#!input = JD_POSITION_ID
+#!input = JTT_APPID
+#!input = JTT_APPKEY
+#!select = ENGINE,auto,jsc,webview
+#!input = TIMEOUT
+#!select = DISABLE_NOTICE,true,false
+#!input = THEME_TIME
+#!select = ENABLE_MMMCK,true,false
+#!system = iOS,iPadOS
+#!system_version = 14
+#!loon_version = 3.2.1(372)
+#!tag = 京东,返利,比价,历史价格
 
-#!arguments=JD_UNION_ID:null,JD_POSITION_ID:null,JTT_APPID:null,JTT_APPKEY:null,ENGINE:auto,TIMEOUT:120,MMMCK_SCRIPT:慢慢买CK,DISABLE_NOTICE:true,THEME_TIME:7-19
-
-#!arguments-desc=[参数设置]
-JD_UNION_ID: 填写京东联盟ID
-   ├ 获取方式：登录京东联盟官网 https://union.jd.com/index
-   └ 示例：12345678
-
-JD_POSITION_ID: 填写推广位ID
-   ├ 获取方式：在京东联盟后台创建推广位
-   └ 示例：1234567890
-
-JTT_APPID: 填写京推推AppID
-   ├ 获取方式：登录京推推官网 https://www.jingtuitui.com/user/login
-   └ 示例：1234567890123456
-
-JTT_APPKEY: 填写京推推AppKey
-   ├ 获取方式：同上
-   └ 示例：b123456ce90123456lk890126789012
-
-ENGINE: 脚本执行引擎
-   ├ auto：自动选择（默认）
-   ├ jsc：使用 JavaScriptCore 引擎
-   └ webview：使用 WebView 引擎
-
-TIMEOUT: 脚本超时时间（单位秒）
-   ├ 默认 120
-
-MMMCK_SCRIPT: 慢慢买 CK 启停脚本
-   ├ 慢慢买CK：启用
-   └ #: 注释掉即停用
-
-DISABLE_NOTICE: 禁用转链通知（true启用通知，false仅展示图表）
-
-THEME_TIME: 自定义暗黑模式时间范围
-   ├ 格式：起始小时-结束小时（如 7-19）
-   └ 示例：22-6 表示 22:00~6:00 暗黑模式
+[Argument]
+JD_UNION_ID = input,"",tag=京东联盟ID,desc=登录 https://union.jd.com 获取
+JD_POSITION_ID = input,"",tag=推广位ID,desc=在京东联盟后台创建推广位
+JTT_APPID = input,"",tag=京推推AppID,desc=登录 https://www.jingtuitui.com 获取
+JTT_APPKEY = input,"",tag=京推推AppKey,desc=登录京推推后查看AppKey
+ENGINE = select,"auto","jsc","webview",tag=脚本引擎,desc=选择执行脚本的引擎
+TIMEOUT = input,"120",tag=超时时间,desc=脚本超时时间（单位秒）
+DISABLE_NOTICE = select,"true","false",tag=是否启用通知,desc=true为启用通知功能，false仅展示图表
+THEME_TIME = input,"7-19",tag=暗黑模式时间段,desc=格式：起始小时-结束小时（如 22-6 表示夜间暗黑模式）
+ENABLE_MMMCK = select,"true","false",tag=是否启用慢慢买脚本,desc=true启用慢慢买历史价格，false禁用
 
 [Script]
-京东助手 = type=http-response,pattern=^https:\/\/in\.m\.jd\.com\/product\/.+?\.html,requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js,argument=jd_union_id={{{JD_UNION_ID}}}&jd_position_id={{{JD_POSITION_ID}}}&jtt_appid={{{JTT_APPID}}}&jtt_appkey={{{JTT_APPKEY}}}&engine={{{ENGINE}}}&timeout={{{TIMEOUT}}}&disable_notice={{{DISABLE_NOTICE}}}&theme_time={{{THEME_TIME}}}
+http-response ^https:\/\/in\.m\.jd\.com\/product\/.+?\.html script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js, requires-body=true, max-size=-1, tag=京东助手, argument=[{$persistentStore.read("JD_UNION_ID")},{$persistentStore.read("JD_POSITION_ID")},{$persistentStore.read("JTT_APPID")},{$persistentStore.read("JTT_APPKEY")},{$persistentStore.read("ENGINE")},{$persistentStore.read("TIMEOUT")},{$persistentStore.read("DISABLE_NOTICE")},{$persistentStore.read("THEME_TIME")}]
 
-{{{MMMCK_SCRIPT}}} = type=http-request,pattern=^https?:\/\/apapia-sqk-weblogic\.manmanbuy\.com/baoliao/center/menu,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js,timeout=30
+http-request ^https?:\/\/apapia-sqk-weblogic\.manmanbuy\.com/baoliao/center/menu script-path=https://raw.githubusercontent.com/githubdulong/Script/master/jd_price1.js, requires-body=true, timeout=30, binary-body-mode=0, tag=慢慢买历史价格, enabled={$persistentStore.read("ENABLE_MMMCK")}
 
 [MITM]
 hostname = %APPEND% in.m.jd.com, lite-in.m.jd.com, apapia-sqk-weblogic.manmanbuy.com
