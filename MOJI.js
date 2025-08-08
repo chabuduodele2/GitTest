@@ -30,7 +30,7 @@ try {
       "privilege": {
         "identity": "000-002-00001",
         "privilege": {
-          "totalInServiceDays": 9999,
+          "totalInServiceDays": 0,
           "expiresDate": 4070880000000,
           "purchaseDate": 1672502400000
         },
