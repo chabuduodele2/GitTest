@@ -1,5 +1,13 @@
 // Quantumult X script: script-response-body
 
+
+[rewrite_local]
+^https:\/\/api\.mojidict\.com\/parse\/functions\/union-api url script-response-body https://raw.githubusercontent.com/chabuduodele2/GitTest/refs/heads/master/MOJI.js?token=GHSAT0AAAAAADE5YMRQPDB6COLHJXNG2WX62EV5ZNQ
+
+[mitm]
+hostname = api.mojidict.com
+
+
 let obj = JSON.parse($response.body);
 
 // 替换会员状态字段
